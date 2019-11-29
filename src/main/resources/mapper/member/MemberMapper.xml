@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.personal.works.mapper.MemberMapper">
+
+    <!--  会员信息全查询-->
+    <select id="queryMember" resultType="com.personal.works.entity.MemberEntity">
+        SELECT * FROM `member`
+    </select>
+
+    <insert id="addMember" parameterType="com.personal.works.entity.MemberEntity" useGeneratedKeys="true"  keyProperty="member.id">
+        insert into `member`
+        (name)
+        values (
+        #{member.name}
+        )
+
+    </insert>
+
+
+</mapper>
