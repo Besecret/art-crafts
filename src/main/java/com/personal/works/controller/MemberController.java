@@ -1,6 +1,5 @@
 package com.personal.works.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.personal.works.entity.MemberEntity;
 import com.personal.works.service.MemberService;
@@ -9,18 +8,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 /**
- *  会员controller
- * @author w.d
+ * 会员controller
  *
+ * @author w.d
  */
 
 @Controller
@@ -34,70 +33,77 @@ public class MemberController {
 
 
     /**
-     *  会员全查询，redis缓存
+     * 会员全查询，redis缓存
+     *
      * @param param 入参数
      * @return json
      */
 
     @RequestMapping("/queryMember")
     @ResponseBody
-    @Cacheable(cacheNames = "member" ,key="'work'")
+    @Cacheable(cacheNames = "member", key = "'work'" ,unless = "#result.code = false ")
     public ResultVO<MemberEntity> queryMember(@RequestBody String param) {
 
         JSONObject requestMap = JSONObject.parseObject(param);
-        log.info(" 会员查询入参数 param ->"+requestMap);
-
-        List<MemberEntity> list =memService.queryMember();
+        log.info(" 会员查询入参数 param ->" + requestMap);
+        //全查询
         ResultVO<MemberEntity> resultVO = new ResultVO();
-        resultVO=resultVO.sucess("ok",list);
-
+        try {
+            List<MemberEntity> list = memService.queryMember(new MemberEntity());
+            resultVO = resultVO.sucess("查询成功", list);
+        } catch (Exception e) {
+            log.error("查询失败");
+            resultVO = resultVO.fail("查询失败");
+        }
         return resultVO;
     }
 
 
     @RequestMapping("/addMember")
     @ResponseBody
-    @CachePut(cacheNames = "member" ,key="'work'",unless = "#result.code = false ")
-    public ResultVO<MemberEntity> addMember(@RequestBody String param){
+    @CachePut(cacheNames = "member", key = "'work'", unless = "#result.code = false ")
+    public ResultVO<MemberEntity> addMember(@RequestBody String param) {
 
         JSONObject requestMap = JSONObject.parseObject(param);
-        log.info(" 会员新增入参数 param ->"+requestMap);
+        log.info(" 会员新增入参数 param ->" + requestMap);
         ResultVO<MemberEntity> resultVO = new ResultVO();
 
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setName(requestMap.getString("name"));
 
         int num = memService.addMember(memberEntity);
-        if(num >0){
+        if (num > 0) {
             log.info("新增成功 !");
 
-            List<MemberEntity> list =memService.queryMember();
-            resultVO=resultVO.sucess("ok",list);
+            List<MemberEntity> list = memService.queryMember(new MemberEntity());
+            resultVO = resultVO.sucess("ok", list);
 
-        }else{
+        } else {
             log.info("新增失败 !");
-
-            resultVO=resultVO.fail(" insert fail !");
+            resultVO = resultVO.fail(" insert fail !");
 
         }
-
         return resultVO;
-
     }
 
+    @RequestMapping("/queryMember/{memId}")
+    @ResponseBody
+    @Cacheable(cacheNames = "member", key = "#memId", unless = "#result.code = false ")
+    public ResultVO<MemberEntity> queryMemberById(@PathVariable("memId") int memId) {
 
-
-
-
-
-
-
-
-
-
-
-
-
+        log.info(" 会员查询入参数 param ->" + memId);
+        ResultVO<MemberEntity> resultVO = new ResultVO();
+        MemberEntity member = new MemberEntity();
+        member.setId(memId);
+        try {
+            List<MemberEntity> list = memService.queryMember(member);
+            resultVO = resultVO.sucess("ok", list);
+        } catch (Exception e) {
+            log.error("查询失败");
+            resultVO = resultVO.fail("查询失败");
+        }
+        return resultVO;
+    }
 
 
 }

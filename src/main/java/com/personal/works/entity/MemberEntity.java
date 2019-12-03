@@ -20,7 +20,7 @@ public class MemberEntity implements Serializable {
 
     private static final long serialVersionUID = -1154413280289730395L;
 
-    private  int id ;
+    private  Integer id ;
 
     private String name;
 

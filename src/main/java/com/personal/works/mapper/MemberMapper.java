@@ -20,7 +20,7 @@ public interface MemberMapper {
       * 查询会员信息
       * @return member list
       */
-     List<MemberEntity> queryMember();
+     List<MemberEntity> queryMember(@Param("member") MemberEntity member);
 
 
      /**

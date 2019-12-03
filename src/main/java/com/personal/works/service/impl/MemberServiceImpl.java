@@ -21,8 +21,8 @@ public class MemberServiceImpl implements MemberService {
     private MemberMapper memMapper;
 
     @Override
-    public List<MemberEntity> queryMember() {
-            return memMapper.queryMember();
+    public List<MemberEntity> queryMember(MemberEntity member) {
+            return memMapper.queryMember(member);
     }
 
     @Override

@@ -13,18 +13,17 @@ public interface  MemberService {
 
 
     /**
-     * 查询会员
+     * 会员信息查询会员
+     * @param member 会员信息
      * @return memberList
      */
-    List<MemberEntity> queryMember();
+    List<MemberEntity> queryMember(MemberEntity member);
 
 
     /**
-     *
-     * @param member
-     * @return
+     * 新增会员
+     * @param member 会员信息
+     * @return 数据库受影响行
      */
     int  addMember(MemberEntity member);
-
-
 }

@@ -6,10 +6,14 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 
-
+/**
+ * 返回结果vo
+ *
+ * @param <T> T支持
+ * @author w.d
+ */
 @Data
 @ToString
 public class ResultVO<T> implements Serializable {
@@ -17,21 +21,31 @@ public class ResultVO<T> implements Serializable {
 
     private static final long serialVersionUID = 5355392803700698132L;
 
-
+    /**
+     * data
+     */
     @JsonProperty("data")
     private List<T> data;
 
-
+    /**
+     * 状态码
+     */
     @JsonProperty("subCode")
     private String subCode;
 
+    /**
+     * 状态描述
+     */
     @JsonProperty("subMsg")
-    private String  subMsg;
+    private String subMsg;
 
+    /**
+     * 缓存code
+     */
     private Boolean code;
 
 
-    public ResultVO<T> sucess(String subMsg,List<T> t){
+    public ResultVO<T> sucess(String subMsg, List<T> t) {
 
         ResultVO<T> resultVO = new ResultVO<>();
         resultVO.setSubCode(Constant.SCCUESS_CODE);
@@ -42,7 +56,7 @@ public class ResultVO<T> implements Serializable {
 
     }
 
-    public ResultVO<T> sucess(String subMsg){
+    public ResultVO<T> sucess(String subMsg) {
 
         ResultVO<T> resultVO = new ResultVO<>();
         resultVO.setSubCode(Constant.SCCUESS_CODE);
@@ -51,7 +65,7 @@ public class ResultVO<T> implements Serializable {
         return resultVO;
     }
 
-    public ResultVO<T> fail(String subMsg){
+    public ResultVO<T> fail(String subMsg) {
 
         ResultVO<T> resultVO = new ResultVO<>();
         resultVO.setSubCode(Constant.ERROR_CODE);
@@ -59,7 +73,6 @@ public class ResultVO<T> implements Serializable {
         resultVO.setCode(false);
         return resultVO;
     }
-
 
 
 }
