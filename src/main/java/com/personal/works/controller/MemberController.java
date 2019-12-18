@@ -8,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -36,12 +33,12 @@ public class MemberController {
      * 会员全查询，redis缓存
      *
      * @param param 入参数
-     * @return json
+     * @return resultVO
      */
 
-    @RequestMapping("/queryMember")
+    @RequestMapping(value = "/members", method = RequestMethod.GET)
     @ResponseBody
-    @Cacheable(cacheNames = "member", key = "'work'" ,unless = "#result.code = false ")
+    @Cacheable(cacheNames = "member", key = "'work'", unless = "#result.code == false ")
     public ResultVO<MemberEntity> queryMember(@RequestBody String param) {
 
         JSONObject requestMap = JSONObject.parseObject(param);
@@ -58,10 +55,15 @@ public class MemberController {
         return resultVO;
     }
 
-
-    @RequestMapping("/addMember")
+    /**
+     * 新增会员
+     *
+     * @param param 会员信息
+     * @return resultVO
+     */
+    @RequestMapping(value = "/member", method = RequestMethod.POST)
     @ResponseBody
-    @CachePut(cacheNames = "member", key = "'work'", unless = "#result.code = false ")
+    @CachePut(cacheNames = "member", key = "'work'", unless = "#result.code == false ")
     public ResultVO<MemberEntity> addMember(@RequestBody String param) {
 
         JSONObject requestMap = JSONObject.parseObject(param);
@@ -86,9 +88,16 @@ public class MemberController {
         return resultVO;
     }
 
-    @RequestMapping("/queryMember/{memId}")
+
+    /**
+     * 使用会员id，查询会员
+     *
+     * @param memId 会员id
+     * @return resultVO
+     */
+    @RequestMapping(value = "/member/{memId}", method = RequestMethod.GET)
     @ResponseBody
-    @Cacheable(cacheNames = "member", key = "#memId", unless = "#result.code = false ")
+    @Cacheable(cacheNames = "member", key = "#memId", unless = "#result.code == false ")
     public ResultVO<MemberEntity> queryMemberById(@PathVariable("memId") int memId) {
 
         log.info(" 会员查询入参数 param ->" + memId);
@@ -96,14 +105,20 @@ public class MemberController {
         MemberEntity member = new MemberEntity();
         member.setId(memId);
         try {
+
             List<MemberEntity> list = memService.queryMember(member);
-            resultVO = resultVO.sucess("ok", list);
+            if (list.isEmpty()) {
+
+                resultVO = resultVO.fail("不存在此用户!");
+            } else {
+
+                resultVO = resultVO.sucess("ok", list);
+            }
+
         } catch (Exception e) {
-            log.error("查询失败");
-            resultVO = resultVO.fail("查询失败");
+            log.error("查询失败!");
+            resultVO = resultVO.fail("查询失败!");
         }
         return resultVO;
     }
-
-
 }
